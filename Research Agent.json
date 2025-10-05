@@ -1,0 +1,209 @@
+{
+  "name": "Research Agent",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        112,
+        32
+      ],
+      "id": "5ca858dd-f7a5-4b9f-a8c5-43f096608a71",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json?q=AI+trends+2025&api_key=61bf8b39586f17a9fb7ee86e88f40f7275b3fb9df081f1951f0fbdf851ebac61",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        32
+      ],
+      "id": "d813da38-6b96-4d9d-9802-5e1841fea674",
+      "name": "🧠Fetch AI Trends (SerpAPI)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the first item’s JSON (SerpAPI response)\nconst data = $input.item.json;\nconst out = [];\n\n// Helper to safely push normalized items\nfunction pushItem(obj) {\n  out.push({ json: obj });\n}\n\n// 1) organic_results (web results)\nif (Array.isArray(data.organic_results)) {\n  data.organic_results.forEach(it => {\n    pushItem({\n      type: 'organic',\n      title: it.title || '',\n      link: it.link || it.redirect_link || '',\n      snippet: it.snippet || '',\n      source: it.source || '',\n      position: it.position || ''\n    });\n  });\n}\n\n// 2) related_questions (People Also Ask)\nif (Array.isArray(data.related_questions)) {\n  data.related_questions.forEach(it => {\n    pushItem({\n      type: 'related_question',\n      title: it.question || it.title || '',\n      link: it.link || '',\n      snippet: it.snippet || '',\n      date: it.date || ''\n    });\n  });\n}\n\n// 3) inline_videos (YouTube videos)\nif (Array.isArray(data.inline_videos)) {\n  data.inline_videos.forEach(it => {\n    pushItem({\n      type: 'video',\n      title: it.title || '',\n      link: it.link || '',\n      channel: it.channel || '',\n      duration: it.duration || '',\n      thumbnail: it.thumbnail || '',\n      position: it.position || ''\n    });\n  });\n}\n\n// 4) ai_overview.text_blocks (structured info)\nif (data.ai_overview && Array.isArray(data.ai_overview.text_blocks)) {\n  data.ai_overview.text_blocks.forEach(tb => {\n    let text = '';\n    if (tb.type === 'paragraph') text = tb.snippet || '';\n    else if (tb.type === 'list' && Array.isArray(tb.list)) {\n      text = tb.list.map(l => l.snippet || '').join(' • ');\n    }\n    if (text) {\n      pushItem({\n        type: 'ai_overview',\n        title: '',\n        link: '',\n        snippet: text\n      });\n    }\n  });\n}\n\n// 5) top_stories (news section)\nif (Array.isArray(data.top_stories)) {\n  data.top_stories.forEach(it => {\n    pushItem({\n      type: 'top_story',\n      title: it.title || '',\n      link: it.link || '',\n      source: it.source || '',\n      date: it.date || '',\n      thumbnail: it.thumbnail || ''\n    });\n  });\n}\n\n// Return normalized array\nreturn out;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        32
+      ],
+      "id": "610e90bb-dc33-4ba5-931b-7def33c994f0",
+      "name": "⚙️ Normalize API Response"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1AUQ-Bn6EoZPVWCs_f9r-Ux6jKWh8xQ_0CfDt_MP-5i0",
+          "mode": "list",
+          "cachedResultName": "AI_Trends_2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AUQ-Bn6EoZPVWCs_f9r-Ux6jKWh8xQ_0CfDt_MP-5i0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AUQ-Bn6EoZPVWCs_f9r-Ux6jKWh8xQ_0CfDt_MP-5i0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Type ": "={{ $json.type }}",
+            "Title": "={{ $json.title }}",
+            "Link": "={{ $json.link }}",
+            "Snippet": "={{ $json.snippet }}",
+            "Source": "={{ $json.source }}",
+            "Position": "={{ $json.position }}",
+            "Date": "={{ $now.toLocaleString() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Type ",
+              "displayName": "Type ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Snippet",
+              "displayName": "Snippet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Position",
+              "displayName": "Position",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        736,
+        32
+      ],
+      "id": "f5dad285-9e45-4bf8-a069-1e56f4b4ed0b",
+      "name": "📊 Save Data to Google Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oh2eLjt9ykulIpmK",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "🧠Fetch AI Trends (SerpAPI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧠Fetch AI Trends (SerpAPI)": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Normalize API Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Normalize API Response": {
+      "main": [
+        [
+          {
+            "node": "📊 Save Data to Google Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Save Data to Google Sheet": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e8f14aa2-f1b7-42a7-b719-b345975c7121",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f9d8f0761249a593661b2128bae64014e54e0b5cae7c058b51de81d1a157a3d2"
+  },
+  "id": "3aTXfl0hlvgP1sZX",
+  "tags": []
+}
