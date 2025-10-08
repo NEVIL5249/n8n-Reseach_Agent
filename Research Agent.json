@@ -14,7 +14,7 @@
     },
     {
       "parameters": {
-        "url": "https://serpapi.com/search.json?q=AI+trends+2025&api_key=61bf8b39586f17a9fb7ee86e88f40f7275b3fb9df081f1951f0fbdf851ebac61",
+        "url": "https://serpapi.com/search.json?q=AI+trends+2025&api_key=ADD_YOUR_API_KEY_HERE",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -47,14 +47,14 @@
           "value": "1AUQ-Bn6EoZPVWCs_f9r-Ux6jKWh8xQ_0CfDt_MP-5i0",
           "mode": "list",
           "cachedResultName": "AI_Trends_2025",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AUQ-Bn6EoZPVWCs_f9r-Ux6jKWh8xQ_0CfDt_MP-5i0/edit?usp=drivesdk"
+          "cachedResultUrl": "LINK_OF_YOUR_GOOGLE_SHEETS"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
           "mode": "list",
           "cachedResultName": "Sheet1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AUQ-Bn6EoZPVWCs_f9r-Ux6jKWh8xQ_0CfDt_MP-5i0/edit#gid=0"
+          "cachedResultUrl": "LINK_OF_YOUR_GOOGLE_SHEETS"
         },
         "columns": {
           "mappingMode": "defineBelow",
